@@ -3,24 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR code generater</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>QR Code Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        #imageQR {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .placeholder {
+            color: #999;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #inpValue {
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #inpValue:focus {
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        #btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #btn:active {
+            transform: translateY(0);
+        }
+
+        .download-section {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .download-section.active {
+            display: block;
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .download-btn {
+            background: #28a745;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .quality-selector {
+            margin-bottom: 15px;
+        }
+
+        .quality-selector label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .quality-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .quality-selector select:focus {
+            border-color: #667eea;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
 </head>
 <body>
-  <section id="qrBlock">
-   <article>
-      <div class="container">
-         <h1>QR Code</h1>
-         <div class="image">
-            <img src="./write-something.webp" alt="" id="imageQR">
-         </div>
-         <div class="content">
-            <input type="text" placeholder="enter value for QR" id="inpValue">
-            <button id="btn">Generate QR Code</button>
-         </div>
-      </div>
-   </article>
-  </section>
-  <script src="./Generation.js"></script>
+    <section id="qrBlock">
+        <article>
+            <div class="container">
+                <h1>QR Code Generator</h1>
+                <div class="image">
+                    <div class="placeholder" id="placeholder">Enter text to generate QR code</div>
+                    <img src="" alt="QR Code" id="imageQR" style="display: none;">
+                </div>
+                <div class="content">
+                    <input type="text" placeholder="Enter value for QR code" id="inpValue">
+                    <button id="btn">Generate QR Code</button>
+                    
+                    <div class="download-section" id="downloadSection">
+                        <div class="quality-selector">
+                            <label for="qualitySelect">Select Quality:</label>
+                            <select id="qualitySelect">
+                                <option value="300">Standard (300x300)</option>
+                                <option value="500">High (500x500)</option>
+                                <option value="1000" selected>Very High (1000x1000)</option>
+                                <option value="2000">Ultra HD (2000x2000)</option>
+                            </select>
+                        </div>
+                        <div class="quality-selector">
+                            <label for="formatSelect">Select Format:</label>
+                            <select id="formatSelect">
+                                <option value="png" selected>PNG</option>
+                                <option value="jpg">JPG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="webp">WebP</option>
+                                <option value="svg">SVG</option>
+                            </select>
+                        </div>
+                        <div class="download-buttons">
+                            <button class="download-btn" id="downloadBtn">
+                                📥 Download QR Code
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <script>
+        const input = document.getElementById('inpValue');
+        const generateBtn = document.getElementById('btn');
+        const qrImage = document.getElementById('imageQR');
+        const placeholder = document.getElementById('placeholder');
+        const downloadSection = document.getElementById('downloadSection');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const qualitySelect = document.getElementById('qualitySelect');
+        const formatSelect = document.getElementById('formatSelect');
+
+        let currentQRData = '';
+
+        // Generate QR Code
+        generateBtn.addEventListener('click', generateQR);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateQR();
+        });
+
+        function generateQR() {
+            const inputValue = input.value.trim();
+            
+            if (!inputValue) {
+                alert('Please enter a value to generate QR code');
+                return;
+            }
+
+            currentQRData = inputValue;
+            const quality = qualitySelect.value;
+            const format = formatSelect.value;
+            
+            // Using QR Server API for high-quality QR codes without watermark
+            let apiUrl;
+            if (format === 'svg') {
+                apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${quality}x${quality}&format=svg&data=${encodeURIComponent(inputValue)}`;
+            } else {
+                apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${quality}x${quality}&data=${encodeURIComponent(inputValue)}`;
+            }
+            
+            qrImage.src = apiUrl;
+            qrImage.style.display = 'block';
+            placeholder.style.display = 'none';
+            downloadSection.classList.add('active');
+        }
+
+        // Download QR Code
+        downloadBtn.addEventListener('click', async () => {
+            if (!currentQRData) return;
+
+            try {
+                const quality = qualitySelect.value;
+                const format = formatSelect.value;
+                let apiUrl;
+                
+                if (format === 'svg') {
+                    apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${quality}x${quality}&format=svg&data=${encodeURIComponent(currentQRData)}`;
+                } else {
+                    apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${quality}x${quality}&data=${encodeURIComponent(currentQRData)}`;
+                }
+                
+                // Fetch the image
+                const response = await fetch(apiUrl);
+                const blob = await response.blob();
+                
+                // Convert to selected format if needed
+                let finalBlob = blob;
+                let fileName = `qrcode-${quality}x${quality}.${format}`;
+                
+                if (format !== 'svg' && format !== 'png') {
+                    // Convert PNG to other formats using canvas
+                    const img = new Image();
+                    const objectUrl = URL.createObjectURL(blob);
+                    
+                    await new Promise((resolve, reject) => {
+                        img.onload = resolve;
+                        img.onerror = reject;
+                        img.src = objectUrl;
+                    });
+                    
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // White background for JPG/JPEG
+                    if (format === 'jpg' || format === 'jpeg') {
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
+                    
+                    ctx.drawImage(img, 0, 0);
+                    URL.revokeObjectURL(objectUrl);
+                    
+                    finalBlob = await new Promise(resolve => {
+                        canvas.toBlob(resolve, `image/${format === 'jpg' ? 'jpeg' : format}`, 0.95);
+                    });
+                }
+                
+                // Create download link
+                const url = window.URL.createObjectURL(finalBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Error downloading QR code. Please try again.');
+                console.error('Download error:', error);
+            }
+        });
+
+        // Update QR code when quality or format changes
+        qualitySelect.addEventListener('change', () => {
+            if (currentQRData) {
+                generateQR();
+            }
+        });
+        
+        formatSelect.addEventListener('change', () => {
+            if (currentQRData) {
+                generateQR();
+            }
+        });
+    </script>
 </body>
 </html>
